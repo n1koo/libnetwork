@@ -772,8 +772,9 @@ func (ep *endpoint) updateDNS(resolvConf []byte) error {
 		return nil
 	}
 
+	hostNetworking = network.Type() == "host"
 	// replace any localhost/127.* and remove IPv6 nameservers if IPv6 disabled.
-	resolvConf, _ = resolvconf.FilterResolvDNS(resolvConf, network.enableIPv6)
+	resolvConf, _ = resolvconf.FilterResolvDNS(resolvConf, hostNetworking, network.enableIPv6)
 
 	newHash, err := ioutils.HashData(bytes.NewReader(resolvConf))
 	if err != nil {

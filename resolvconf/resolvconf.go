@@ -88,9 +88,13 @@ func GetLastModified() ([]byte, string) {
 //    code will remove all IPv6 nameservers if it is not enabled for containers
 //
 // It returns a boolean to notify the caller if changes were made at all
-func FilterResolvDNS(resolvConf []byte, ipv6Enabled bool) ([]byte, bool) {
+func FilterResolvDNS(resolvConf []byte, hostNetworking bool, ipv6Enabled bool) ([]byte, bool) {
 	changed := false
-	cleanedResolvConf := localhostNSRegexp.ReplaceAll(resolvConf, []byte{})
+
+	//if host networking is used allow localhost in resolv.conf
+	if !hostNetworking {
+		cleanedResolvConf := localhostNSRegexp.ReplaceAll(resolvConf, []byte{})
+	}
 	// if IPv6 is not enabled, also clean out any IPv6 address nameserver
 	if !ipv6Enabled {
 		cleanedResolvConf = nsIPv6Regexp.ReplaceAll(cleanedResolvConf, []byte{})
